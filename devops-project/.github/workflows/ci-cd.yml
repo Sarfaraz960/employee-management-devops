@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout source code
         uses: actions/checkout@v4
 
@@ -23,8 +22,10 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
+          cache-dependency-path: devops-project/pom.xml
 
       - name: Build application
+        working-directory: devops-project
         run: mvn clean package -DskipTests
 
       - name: Login to Docker Hub
@@ -34,9 +35,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: |
-          docker build -t sarfaraz06/employee-management:1.0 .
+        run: docker build -t sarfaraz06/employee-management:1.0 ./devops-project
 
       - name: Push Docker image
-        run: |
-          docker push sarfaraz06/employee-management:1.0
+        run: docker push sarfaraz06/employee-management:1.0
